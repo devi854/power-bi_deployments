@@ -1,0 +1,11 @@
+{
+    "parameters": [{
+        "name": "SQLDB DEV",
+        "value": "devidata"
+    },
+    {
+        "name": "SQL Server Dev",
+        "value": "devidata.database.windows.net"
+    }
+]
+}
