@@ -1,11 +1,11 @@
 {
     "parameters": [{
-        "name": "SQLDB DEV",
-        "value": "devidata"
+        "name": "SQLDB PROD",
+        "value": "prod"
     },
     {
-        "name": "SQL Server Dev",
-        "value": "devidata.database.windows.net"
+        "name": "SQL Server Prod",
+        "value": "prddata.database.windows.net"
     }
 ]
 }
