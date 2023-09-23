@@ -53,12 +53,12 @@ jobs:
 
       - name: Set up environment
         run: |
-          $ParamDbName = "database" # Replace with the name of the parameter to update
-          $DbName = "devidata"  # Replace with the new value for the parameter
-          $ParamDbServerName = "Server" # Replace with the name of the server name parameter
-          $DbServer = "devidata.database.windows.net" # Replace with the new server name value
-          $WorkspaceId = "96b1ab18-cd5e-4e01-8ffd-8bf59651f1bf" # Replace with your Power BI workspace ID
-          $DatasetId = "6bd5bd3b-4af9-4e6c-9151-4cca6cbb6ed5" # Replace with your dataset ID
+          $ParamDbName: "database" # Replace with the name of the parameter to update
+          $DbName: "devidata"  # Replace with the new value for the parameter
+          $ParamDbServerName: "Server" # Replace with the name of the server name parameter
+          $DbServer: "devidata.database.windows.net" # Replace with the new server name value
+          $WorkspaceId: "96b1ab18-cd5e-4e01-8ffd-8bf59651f1bf" # Replace with your Power BI workspace ID
+          $DatasetId: "6bd5bd3b-4af9-4e6c-9151-4cca6cbb6ed5" # Replace with your dataset ID
         env:
           PARAM_DB_NAME: $ParamDbName
           DB_NAME: $DbName
