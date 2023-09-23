@@ -1,55 +1,105 @@
-name: Power BI Deployment with Dataset Parameter Update
+name: Power BI Deployment
 
 on:
   push:
     branches:
-      - main
-
-env:
-  POWER_BI_CLIENT_ID: ${{secrets.POWER_BI_CLIENT_ID}}
-  POWER_BI_CLIENT_SECRET: ${{secrets.POWER_BI_CLIENT_SECRET}}
-  POWER_BI_TENANT_ID: ${{secrets.POWER_BI_TENANT_ID}}
-  POWER_BI_WORKSPACE_ID: ${{secrets.POWER_BI_WORKSPACE_ID}}
-  PBIX_FILE_PATH: ./finaldashboard.pbix
-  DATASET_NAME: finaldashboard
-  REPORT_NAME: finaldashboard.pbix
-  DOTNET_INSTALL_DIR: "runner/dotnet"
+      - newscr
 
 jobs:
-  pbix_deploy:
+  power-bi-deployment:
     runs-on: ubuntu-latest
 
+    env:
+      AppID: ${{ secrets.PBI_APP_ID }}
+      Secret: ${{ secrets.PBI_APP_SECRET }}
+      TenantID: ${{ secrets.PBI_TENANT_ID }}
+      ReportPath: "path/to/your/report.pbix"
+      ReportName: "YourReportName"
+      WorkspaceName: "YourWorkspaceName"
+      ParamDbName: "DatabaseNameParameterName"
+      DbName: "NewDatabaseName"
+      ParamDbServerName: "ServerNameParameterName"
+      DbServer: "NewServerName"
+      sqlUserName: "YourSQLUserName"
+      sqlUserPassword: "YourSQLPassword"
+
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3.0.3
+      - name: Install PowerShell modules
+        run: |
+          Install-Module -Name MicrosoftPowerBIMgmt -Force -Scope CurrentUser
+          Install-Module -Name Az -Force -Scope CurrentUser
+          Install-Module -Name NewtonSoft.Json -Force -Scope CurrentUser
+
+      - name: Set up Azure CLI
+        uses: azure/login@v1
         with:
-          dotnet-version: 6.0.x
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
+      - name: Log in to Power BI
+        run: |
+          $Password = ConvertTo-SecureString $Secret -AsPlainText -Force
+          $creds = New-Object PSCredential $AppID, $Password
+          Connect-PowerBIServiceAccount -ServicePrincipal -Credential $creds -Tenant $TenantID
 
-      - name: Install Power BI CLI
+      - name: Get existing workspace
         run: |
-          npm i -g @powerbi-cli/powerbi-cli
+          $Workspace = Get-PowerBIWorkspace -Name $WorkspaceName
 
-      - name: Authenticate Power BI CLI
+      - name: Publish PBIX
         run: |
-          pbicli login --service-principal -p ${{env.POWER_BI_CLIENT_ID}} -s ${{env.POWER_BI_CLIENT_SECRET}} -t ${{env.POWER_BI_TENANT_ID}}
-          
-      - name: Import PBIX File
-        run: |
-          pbicli import pbix --workspace ${{env.POWER_BI_WORKSPACE_ID}} --file ${{env.PBIX_FILE_PATH}} --name ${{env.DATASET_NAME}} --conflict CreateOrOverwrite
+          New-PowerBIReport -Path $ReportPath -Name $ReportName -WorkspaceId $Workspace.Id -ConflictAction CreateOrOverwrite
 
-      - name: List Dataset Parameters
+      - name: Take Over Report
         run: |
-          pbicli dataset parameter list --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}}
+          Invoke-PowerBIRestMethod -Method Post -Url groups/$($Workspace.Id.Guid)/datasets/$($Report.DatasetId)/Default.TakeOver -WarningAction Ignore
 
       - name: Update Dataset Parameters
         run: |
-          # Here, update dataset parameters using the contents of your parameter file
-          pbicli dataset parameter update --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}} --parameter @{./parameter-values.json}
+          $Parameters = @{
+            "updateDetails"= @(
+              @{
+                "name"="$($ParamDbName)";
+                "newValue"="$($DbName)";
+              },
+              @{
+                "name"="$($ParamDbServerName)";
+                "newValue"="$($DbServer)";
+              }            
+            )
+          }
+          $ParametersJson = $Parameters | ConvertTo-Json -Compress
+          $UpdateParam = Invoke-PowerBIRestMethod -Method Post -Body $ParametersJson -Url groups/$($Workspace.Id.Guid)/datasets/$($Report.DatasetId)/Default.UpdateParameters
+
+      - name: Update Datasource (SQL Credentials)
+        run: |
+          $Dataset = Get-PowerBIDataset -WorkspaceId $Workspace.Id -Id $Report.DatasetId
+          $WorkspaceId = $Workspace.Id
+          $DatasetId = $Dataset.Id
+          $Datasources = Get-PowerBIDatasource -WorkspaceId $WorkspaceId -DatasetId $DatasetId
+
+          foreach($Datasource in $Datasources) {
+            $GatewayId = $Datasource.GatewayId
+            $DatasourceId = $Datasource.DatasourceId
+            $DatasourePatchUrl = "gateways/$GatewayId/datasources/$DatasourceId"
+            $userNameJson = "{""name"":""username"",""value"":""$sqlUserName""}"
+            $passwordJson = "{""name"":""password"",""value"":""$sqlUserPassword""}"
+
+            $patchBody = @{
+              "credentialDetails" = @{
+                "credentials" = "{""credentialData"":[ $userNameJson, $passwordJson ]}"
+                "credentialType" = "Basic"
+                "encryptedConnection" =  "Encrypted"
+                "encryptionAlgorithm" = "None"
+                "privacyLevel" = "None"
+              }
+            }
+            $patchBodyJson = ConvertTo-JSon -InputObject $patchBody -Depth 6 -Compress
+            $CredUpdate = Invoke-PowerBIRestMethod -Method Patch -Url $DatasourePatchUrl -Body $patchBodyJson
+          }
+
+      - name: Refresh Dataset
+        run: |
+          Invoke-PowerBIRestMethod -Method Post -Url groups/$($Workspace.Id.Guid)/datasets/$($Report.DatasetId)/refreshes -WarningAction Ignore
