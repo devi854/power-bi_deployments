@@ -71,11 +71,11 @@ jobs:
         run: |
           $Parameters: @{
                     "name"="$env:PARAM_DB_NAME";
-                    "newValue"="$env:DB_NAME";
+                    "newValue"="$env.DB_NAME";
                 },
                 @{
                     "name"="$env:PARAM_DB_SERVER_NAME";
-                    "newValue"="$env:DB_SERVER";
+                    "newValue"="$env.DB_SERVER";
                 }            
           $ParametersJson = $Parameters | ConvertTo-Json -Compress
           $AccessToken = $(az account get-access-token --query accessToken -o tsv)
