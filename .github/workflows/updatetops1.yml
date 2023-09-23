@@ -16,7 +16,7 @@ env:
 
 jobs:
   deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -66,13 +66,6 @@ jobs:
           DB_SERVER: $DbServer
           WORKSPACE_ID: $WorkspaceId
           DATASET_ID: $DatasetId
-
-      - name: Deploy Power BI Report
-        run: |
-          # Replace this step with your actual report deployment step.
-          # You can use the Power BI CLI or another deployment method here.
-          pbicli deploy -r ./finaldashboard.pbix -w $WORKSPACE_ID -n "finaldashboard"
-          echo "Deploying Power BI report..."
 
       - name: Update Dataset Parameters
         run: |
