@@ -4,6 +4,15 @@ on:
   push:
     branches:
       - powershell
+env:
+  POWER_BI_CLIENT_ID: ${{secrets.POWER_BI_CLIENT_ID}}
+  POWER_BI_CLIENT_SECRET: ${{secrets.POWER_BI_CLIENT_SECRET}}
+  POWER_BI_TENANT_ID: ${{secrets.POWER_BI_TENANT_ID}}
+  POWER_BI_WORKSPACE_ID: ${{secrets.POWER_BI_WORKSPACE_ID}}
+  PBIX_FILE_PATH: ./finaldashboard.pbix
+  DATASET_NAME: finaldashboard
+  REPORT_NAME: finaldashboard.pbix
+  DOTNET_INSTALL_DIR: "runner/dotnet"
 
 jobs:
   deploy:
@@ -12,6 +21,28 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3.0.3
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Power BI CLI
+        run: |
+          npm i -g @powerbi-cli/powerbi-cli
+
+      - name: Authenticate Power BI CLI
+        run: |
+          pbicli login --service-principal -p ${{env.POWER_BI_CLIENT_ID}} -s ${{env.POWER_BI_CLIENT_SECRET}} -t ${{env.POWER_BI_TENANT_ID}}
+          
+      - name: Import PBIX File
+        run: |
+          pbicli import pbix --workspace ${{env.POWER_BI_WORKSPACE_ID}} --file ${{env.PBIX_FILE_PATH}} --name ${{env.DATASET_NAME}} --conflict CreateOrOverwrite
 
       - name: Set up PowerShell
         shell: pwsh
