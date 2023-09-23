@@ -59,23 +59,16 @@ jobs:
           $DbServer: "devidata.database.windows.net" # Replace with the new server name value
           $WorkspaceId: "96b1ab18-cd5e-4e01-8ffd-8bf59651f1bf" # Replace with your Power BI workspace ID
           $DatasetId: "6bd5bd3b-4af9-4e6c-9151-4cca6cbb6ed5" # Replace with your dataset ID
-        env:
-          PARAM_DB_NAME: $ParamDbName
-          DB_NAME: $DbName
-          PARAM_DB_SERVER_NAME: $ParamDbServerName
-          DB_SERVER: $DbServer
-          WORKSPACE_ID: $WorkspaceId
-          DATASET_ID: $DatasetId
 
       - name: Update Dataset Parameters
         run: |
           $Parameters: @{
-                    "name"="$env.PARAM_DB_NAME";
-                    "newValue"="$env.DB_NAME";
+                    "name"="$ParamDbName";
+                    "newValue"="$DbName";
                 },
                 @{
-                    "name"="$env.PARAM_DB_SERVER_NAME";
-                    "newValue"="$env.DB_SERVER";
+                    "name"="$ParamDbServerName";
+                    "newValue"="$DbServer";
                 }            
           $ParametersJson = $Parameters | ConvertTo-Json -Compress
           $AccessToken = $(az account get-access-token --query accessToken -o tsv)
