@@ -69,8 +69,8 @@ jobs:
 
       - name: Update Dataset Parameters
         run: |
-          $Parameters = @{
-            "updateDetails"= @(
+          $Parameters: @{
+            "updateDetails": @(
                 @{
                     "name"="$env:PARAM_DB_NAME";
                     "newValue"="$env:DB_NAME";
