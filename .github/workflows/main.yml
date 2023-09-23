@@ -68,6 +68,16 @@ jobs:
           creds: '{"clientId":"${{ env.POWER_BI_CLIENT_ID }}", "clientSecret":"${{ env.POWER_BI_CLIENT_SECRET }}", "subscriptionId":"${{ env.AZURE_SUBSCRIPTION_ID }}", "tenantId":"${{ env.POWER_BI_TENANT_ID }}"}'
           enable-AzPSSession: true
 
+      - name: Log in to Power BI
+        run: |
+          $AppID = $env:POWER_BI_CLIENT_ID
+          $Secret = $env:POWER_BI_CLIENT_SECRET
+          $TenantID = $env:POWER_BI_TENANT_ID
+          $Password = ConvertTo-SecureString $Secret -AsPlainText -Force
+          $creds = New-Object PSCredential $AppID, $Password
+          Connect-PowerBIServiceAccount -ServicePrincipal -Credential $creds -Tenant $TenantID
+
+
 
     
   
