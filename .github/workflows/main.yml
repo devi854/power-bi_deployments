@@ -70,12 +70,7 @@ jobs:
 
       - name: Log in to Power BI
         run: |
-          $AppID = $env:POWER_BI_CLIENT_ID
-          $Secret = $env:POWER_BI_CLIENT_SECRET
-          $TenantID = $env:POWER_BI_TENANT_ID
-          $Password = ConvertTo-SecureString $Secret -AsPlainText -Force
-          $creds = New-Object PSCredential $AppID, $Password
-          Connect-PowerBIServiceAccount -ServicePrincipal -Credential $creds -Tenant $TenantID
+          Connect-PowerBIServiceAccount -ServicePrincipal -ApplicationId 647b60eb-374e-4af1-b7c7-439ba4913814 -Tenant 0277ec7c-6485-4a45-9d8e-07a6941a7819
 
 
 
