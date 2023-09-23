@@ -13,8 +13,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Azure PowerShell
-        uses: azure/setup-powershell@v1
+      - name: Set up PowerShell
+        uses: actions/setup-powershell@v2
 
       - name: Import Power BI Module
         run: Install-Module -Name MicrosoftPowerBIMgmt -Force -Scope CurrentUser
@@ -23,7 +23,7 @@ jobs:
 
       - name: Set up environment
         run: |
-          $ParamDbName = "databases" # Replace with the name of the parameter to update
+          $ParamDbName = "database" # Replace with the name of the parameter to update
           $DbName = "devidata"  # Replace with the new value for the parameter
           $ParamDbServerName = "Server" # Replace with the name of the server name parameter
           $DbServer = "devidata.database.windows.net" # Replace with the new server name value
