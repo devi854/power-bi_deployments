@@ -52,7 +52,7 @@ jobs:
       - name: Update Dataset Parameters
         run: |
           # Here, update dataset parameters using the contents of your parameter file
-          pbicli dataset parameter update --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}} --parameters ServerName=devidata.database.windows.net DatabaseName=devidata
+          pbicli dataset parameter update --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}} --parameter ServerName=devidata.database.windows.net DatabaseName=devidata
       - name: Datasource update
         run: |
           pbicli dataset datasource list --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}}
