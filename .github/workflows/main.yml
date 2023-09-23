@@ -3,7 +3,7 @@ name: Power BI Deployment with Dataset Parameter Update
 on:
   push:
     branches:
-      - main
+      - final
 
 env:
   POWER_BI_CLIENT_ID: ${{secrets.POWER_BI_CLIENT_ID}}
@@ -49,7 +49,31 @@ jobs:
         run: |
           pbicli dataset parameter list --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}}
 
-      - name: Update Dataset Parameters
+  upadte_params:
+    runs-on: ubuntu-latest
+    needs: pbix_deploy
+
+    steps:
+      - name: Set up PowerShell
+        shell: pwsh
         run: |
-          # Here, update dataset parameters using the contents of your parameter file
-          pbicli dataset parameter update --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}} --parameter @{./parameter-values.json}
+          Install-Module -Name MicrosoftPowerBIMgmt -Force -Scope CurrentUser
+        env:
+          PSGALLERYApiKey: ${{ secrets.PSGALLERY_API_KEY }}
+
+      - name: Az CLI login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.POWER_BI_CLIENT_ID }}
+          tenant-id: ${{ secrets.POWER_BI_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Azure CLI script
+        uses: azure/CLI@v1
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account show
+            az group list
+    
+  
