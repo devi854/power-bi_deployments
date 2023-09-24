@@ -3,7 +3,7 @@ name: Power BI Deployment with Dataset Parameter Update
 on:
   push:
     branches:
-      - main
+      - rest
 
 env:
   POWER_BI_CLIENT_ID: ${{secrets.POWER_BI_CLIENT_ID}}
@@ -53,3 +53,4 @@ jobs:
         run: |
           # Here, update dataset parameters using the contents of your parameter file
           pbicli dataset parameter update --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}} --parameter @{./parameter-values.json}
+          pbicli rest --uri https://api.powerbi.com/v1.0/myorg/groups/96b1ab18-cd5e-4e01-8ffd-8bf59651f1bf/datasets/6bd5bd3b-4af9-4e6c-9151-4cca6cbb6ed5/Default.UpdateParameters --body @{./parameter-values.json} 
