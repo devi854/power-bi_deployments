@@ -1,0 +1,10 @@
+{
+  "updateDetails": {
+    "dataSource": {
+      "connectionDetails": {
+        "server": "devidata.database.windows.net",
+        "database": "devidata",
+      }
+    }
+  }
+}
