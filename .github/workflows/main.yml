@@ -14,6 +14,7 @@ env:
   DATASET_NAME: finaldashboard
   REPORT_NAME: finaldashboard.pbix
   DOTNET_INSTALL_DIR: "runner/dotnet"
+  POWER_BI_DATASET_ID: ${{secrets.POWER_BI_DATASET_ID}}
 
 jobs:
   pbix_deploy:
@@ -49,10 +50,49 @@ jobs:
         run: |
           pbicli dataset parameter list --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}}
 
+      - name: Obtain Power BI API Token 
+        id: get-token
+        run: |
+          response=$(curl -X POST -d "grant_type=client_credentials" \
+            -d "client_id=$POWER_BI_CLIENT_ID" \
+            -d "client_secret=$POWER_BI_CLIENT_SECRET" \
+            -d "scope=https://analysis.windows.net/powerbi/api/.default" \
+            "https://login.microsoftonline.com/$TENANT_ID/oauth2/token")
+          access_token=$(echo "$response" | jq -r '.access_token'
+          echo "ACCESS_TOKEN=$access_token" >> $GITHUB_ENV
+
+      - name: Make POST request to update dataset parameters
+        run: |
+          DATASET_ID=$POWER_BI_DATASET_ID
+          ACCESS_TOKEN=$INPUT_ACCESS_TOKEN
+          JSON_PAYLOAD='{
+            "updateDetails": [
+              {
+                "name": "DatabaseName",
+                "newValue": "NewDB"
+              },
+              {
+                "name": "MaxId",
+                "newValue": "5678"
+              }
+            ]
+          }'
+          curl -X POST \
+            "https://api.powerbi.com/v1.0/myorg/datasets/${DATASET_ID}/Default.UpdateParameters" \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$JSON_PAYLOAD"
+        env:
+          INPUT_ACCESS_TOKEN: ${{ env.ACCESS_TOKEN }}
+          DATASET_ID: ${{env.POWER_BI_DATASET_ID}}
+          
+          
+
       - name: Update Dataset Parameters
         run: |
           # Here, update dataset parameters using the contents of your parameter file
-          pbicli dataset parameter update --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}} --parameter "{\"ServerName\": \"devidata.database.windows.net\", \"DatabaseName\": \"devidata\"}"
+          curl -X POST \
+            https://api.powerbi.com/v1.0/myorg/datasets/{datasetId}/Default.UpdateParameters
       - name: Datasource update
         run: |
           pbicli dataset datasource list --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}}
