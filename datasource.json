@@ -4,6 +4,7 @@
       "connectionDetails": {
         "server": "devidata.database.windows.net",
         "database": "devidata",
+        "headers": "Bearer @{outputs('access_token')"
       }
     }
   }
