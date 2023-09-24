@@ -51,7 +51,7 @@ jobs:
 
       - name: dataset datasource update
         run: |
-          pbicli dataset datasource update --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}} --headers "Authorization=Bearer ${{env.POWER_BI_CLIENT_SECRET}} --update-details-file @{./datasource.json}
+          pbicli dataset datasource update --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}} --headers "Authorization=Bearer ${{env.POWER_BI_CLIENT_SECRET}} --update-details-file ./datasource.json
 
       - name: Update Dataset Parameters
         run: |
