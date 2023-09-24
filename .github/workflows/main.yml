@@ -49,12 +49,12 @@ jobs:
         JSON_PAYLOAD='{
           "updateDetails": [
             {
-              "name": "DatabaseName",
-              "newValue": "NewDB"
+              "name": "SQLDB DEV",
+              "newValue": "devidata"
             },
             {
-              "name": "MaxId",
-              "newValue": "5678"
+              "name": "SQL Server Dev",
+              "newValue": "devidata.database.windows.net"
             }
           ]
         }' # Defines a JSON payload to send in the POST request
