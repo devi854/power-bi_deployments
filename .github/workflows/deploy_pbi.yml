@@ -25,9 +25,7 @@ jobs:
 
       - name: install powerbi comdlets
         run: |
-          PowerShell/setup-powershell@v1
-          with:
-            pwsh-version: '7.x'
+          shell: pwsh
             
 
       - name: Run PowerShell script
