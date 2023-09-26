@@ -47,5 +47,37 @@ jobs:
         response = requests.post(token_url, data=token_data)
         token = response.json().get('access_token', '')
 
-        print(token)
-        EOF
+        print(f"::set-output name=access_token::{token}")
+  use-access-token:
+    needs: get-access-token
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use Access Token
+        env:
+          ACCESS_TOKEN: ${{ steps.get-access-token.outputs.access_token }}
+        run: |
+          echo "Access Token: $ACCESS_TOKEN"
+
+      - name: Update Power BI Dataset Parameters
+        env:
+          POWER_BI_API_URL: https://api.powerbi.com/v1.0/myorg/datasets/84a1fea6-a146-4316-8aa6-5ce61bee7e34/Default.UpdateParameters
+          POWER_BI_ACCESS_TOKEN: $ACCESS_TOKEN
+        run: |
+          payload='{
+            "updateDetails": [
+              {
+              "name": "DatabaseName",
+              "newValue": "devidata"
+              },
+              {
+              "name": "server",
+              "newValue": "devidata.database.windows.net"
+              }
+            ]
+          }'
+          curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $POWER_BI_API_TOKEN" -d "$payload" "$POWER_BI_API_URL"
+  
+  
+
+    
+  
