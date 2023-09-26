@@ -1,0 +1,42 @@
+name: Power
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  POWER_BI_CLIENT_ID: ${{secrets.POWER_BI_CLIENT_ID}}
+  POWER_BI_CLIENT_SECRET: ${{secrets.POWER_BI_CLIENT_SECRET}}
+  POWER_BI_TENANT_ID: ${{secrets.POWER_BI_TENANT_ID}}
+  POWER_BI_WORKSPACE_ID: ${{secrets.POWER_BI_WORKSPACE_ID}}
+  PBIX_FILE_PATH: ./devreport0001.pbix
+  DATASET_NAME: devreport0001
+  REPORT_NAME: devreport0001.pbix
+  DOTNET_INSTALL_DIR: "runner/dotnet"
+
+jobs:
+  pbix_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Set up PowerShell
+        uses: actions/setup-powershell@v1
+        with:
+          pwsh-version: '7.x'
+
+      - name: Run PowerShell script
+        run: |
+          $tenantId = "0277ec7c-6485-4a45-9d8e-07a6941a7819"
+          $appId = "647b60eb-374e-4af1-b7c7-439ba4913814"
+          $clientSecret = "peA8Q~TGozmsgvf8dT3CF16mDlTVvOUuCufJ_aDF"
+          $psCredential = New-Object -TypeName PSCredential -ArgumentList ($appId, (ConvertTo-SecureString -String $clientSecret -AsPlainText -Force))
+          Connect-PowerBIServiceAccount -TenantId $tenantId -ServicePrincipal -Credential $psCredential
+
+
+
+
+
