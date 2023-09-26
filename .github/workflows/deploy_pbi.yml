@@ -23,11 +23,6 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
-      - name: install powerbi comdlets
-        run: |
-          shell: pwsh
-            
-
       - name: Run PowerShell script
         run: |
           $tenantId = "0277ec7c-6485-4a45-9d8e-07a6941a7819"
