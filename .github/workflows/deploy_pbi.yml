@@ -25,7 +25,7 @@ jobs:
       - name: Install from PSGallery
         shell: pwsh
         run: |
-          Install-Module -Name MicrosoftPowerBIMgmt
+          Install-Module -Name MicrosoftPowerBIMgmt -Force
 
     
 
