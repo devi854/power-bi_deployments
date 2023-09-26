@@ -26,6 +26,7 @@ jobs:
         shell: pwsh
         run: |
           Install-Module -Name MicrosoftPowerBIMgmt -Force
+          Install-Module -Name MicrosoftPowerBIMgmt.Reports -Force
 
     
 
