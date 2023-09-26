@@ -10,9 +10,9 @@ env:
   POWER_BI_CLIENT_SECRET: ${{secrets.POWER_BI_CLIENT_SECRET}}
   POWER_BI_TENANT_ID: ${{secrets.POWER_BI_TENANT_ID}}
   POWER_BI_WORKSPACE_ID: ${{secrets.POWER_BI_WORKSPACE_ID}}
-  PBIX_FILE_PATH: ./lifepredection.pbix
-  DATASET_NAME: lifepredection
-  REPORT_NAME: lifepredection.pbix
+  PBIX_FILE_PATH: ./devreport0001.pbix
+  DATASET_NAME: devreport0001
+  REPORT_NAME: devreport0001.pbix
   DOTNET_INSTALL_DIR: "runner/dotnet"
 
 jobs:
@@ -52,4 +52,4 @@ jobs:
       - name: Update Dataset Parameters
         run: |
           # Here, update dataset parameters using the contents of your parameter file
-          pbicli dataset parameter update --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}} --parameter @{./parameter-values.json} --verbose
+          pbicli dataset parameter update --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}} --parameter "{\"updateDetails\":[{\"name\":\"Server\",\"newValue\":\"dev0001.database.windows.net\"},{\"name\":\"Database\",\"newValue\":\"dev\"},{\"name\":\"BatchNumber\",\"newValue\":\"100\"}]}" --verbose --verbose
