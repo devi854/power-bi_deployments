@@ -22,12 +22,11 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
-      - name: shell
-        uses: actions/setup-powershell@v2
-        with:
-          pwsh-version: '7.x'
+
+    
 
       - name: Run PowerShell script
+        shell: pwsh
         run: |
           $tenantId = "0277ec7c-6485-4a45-9d8e-07a6941a7819"
           $appId = "647b60eb-374e-4af1-b7c7-439ba4913814"
