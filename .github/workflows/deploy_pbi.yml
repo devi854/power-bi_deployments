@@ -22,6 +22,10 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
+      - name: shell
+        uses: actions/setup-powershell@v2
+        with:
+          pwsh-version: '7.x'
 
       - name: Run PowerShell script
         run: |
