@@ -40,7 +40,9 @@ jobs:
           $workspaceId = "96b1ab18-cd5e-4e01-8ffd-8bf59651f1bf"
           $psCredential = New-Object -TypeName PSCredential -ArgumentList ($appId, (ConvertTo-SecureString -String $clientSecret -AsPlainText -Force))
           Connect-PowerBIServiceAccount -ServicePrincipal -Credential $psCredential -TenantId $tenantId
-          Publish-PowerBIReport -Path $reportPath -WorkspaceId $workspaceId -ConflictAction CreateOrOverwrite
+          #Publish-PowerBIReport -Path $reportPath -WorkspaceId $workspaceId -ConflictAction CreateOrOverwrite
+          Export-PowerBIReport -Id 96b1ab18-cd5e-4e01-8ffd-8bf59651f1bf -OutFile .\devreport0001.pbix
+          
   
           
 
