@@ -1,0 +1,50 @@
+name: Get Azure AD Access Token
+
+on:
+  push:
+    branches:
+      - final # Modify to match your branch name
+
+jobs:
+  get-access-token:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x  # Choose the Python version you want to use
+
+    - name: Install dependencies
+      run: pip install requests
+
+    - name: Get Azure AD Access Token
+      env:
+        POWER_BI_CLIENT_ID: ${{secrets.POWER_BI_CLIENT_ID}}
+        POWER_BI_CLIENT_SECRET: ${{secrets.POWER_BI_CLIENT_SECRET}}
+        POWER_BI_TENANT_ID: ${{secrets.POWER_BI_TENANT_ID}}
+        RESOURCE_URI: "https://analysis.windows.net/powerbi/api"
+      run: |
+        python - <<EOF
+        import requests
+
+        # Azure AD token endpoint
+        token_url = f"https://login.microsoftonline.com/{os.environ['TENANT_ID']}/oauth2/token"
+
+        # Token request payload
+        token_data = {
+            "grant_type": "client_credentials",
+            "client_id": os.environ['POWER_BI_CLIENT_ID'],
+            "client_secret": os.environ['POWER_BI_CLIENT_SECRET'],
+            "resource": os.environ['RESOURCE_URI']
+        }
+
+        # Request token
+        response = requests.post(token_url, data=token_data)
+        token = response.json().get('access_token', '')
+
+        print(token)
+        EOF
