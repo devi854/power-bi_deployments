@@ -23,10 +23,10 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
-      - name: Set up PowerShell
-        uses: actions/setup-powershell@v1
-        with:
-          pwsh-version: '7.x'
+      - name: install powerbi comdlets
+        run: |
+          Install-Module -Name MicrosoftPowerBIMgmt
+          Connect-PowerBIServiceAccount   # or use aliases: Login-PowerBIServiceAccount, Login-PowerBI
 
       - name: Run PowerShell script
         run: |
