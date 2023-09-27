@@ -40,6 +40,10 @@ jobs:
       - name: Authenticate Power BI CLI
         run: |
           pbicli login --service-principal -p ${{env.POWER_BI_CLIENT_ID}} -s ${{env.POWER_BI_CLIENT_SECRET}} -t ${{env.POWER_BI_TENANT_ID}}
+
+      - name: import params
+        run: |
+          pbicli import-parameters -r ${{env.PBIX_FILE_PATH}} -p $dev0001.database.windows.net,$dev
           
       - name: Import PBIX File
         run: |
