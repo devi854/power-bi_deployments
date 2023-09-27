@@ -49,6 +49,10 @@ jobs:
         run: |
           pbicli import pbix --workspace ${{env.POWER_BI_WORKSPACE_ID}} --file ${{env.PBIX_FILE_PATH}} --name ${{env.DATASET_NAME}} --conflict CreateOrOverwrite
 
+      - name: update datasource
+        run: |
+          pbcli dataset datasource update --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}} --update-details-file ./params.json --verbose
+
       - name: List Dataset Parameters
         run: |
           pbicli dataset parameter list --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}}
