@@ -47,7 +47,7 @@ jobs:
 
       - name: update datasource
         run: |
-          pbcli dataset datasource update --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}} --update-details-file ./params.json --verbose
+          pbicli dataset datasource update --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}} --update-details-file ./params.json --verbose
 
       - name: List Dataset Parameters
         run: |
