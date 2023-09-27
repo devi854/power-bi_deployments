@@ -1,0 +1,17 @@
+{
+  "updateDetails": [
+    {
+      "datasourceSelector": {
+        "datasourceType": "Sql",
+        "connectionDetails": {
+          "server": "dev0001.database.windows.net",
+          "database": "dev"
+        }
+      },
+      "connectionDetails": {
+        "server": "prd-0001.database.windows.net",
+        "database": "prod"
+      }
+    }
+  ]
+}
