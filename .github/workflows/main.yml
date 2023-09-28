@@ -38,9 +38,13 @@ jobs:
         run: |
           npm i -g @powerbi-cli/powerbi-cli
 
-      - name: Authenticate Power BI CLI
+      - name: Authenticate Power BI CLI azure
         run: |
-          pbicli login --service-principal -p ${{env.POWER_BI_CLIENT_ID}} -s ${{env.POWER_BI_CLIENT_SECRET}} -t ${{env.POWER_BI_TENANT_ID}}
+          az login --service-principal -u ${{env.POWER_BI_CLIENT_ID}} -p ${{env.POWER_BI_CLIENT_SECRET}} --tenant ${{env.POWER_BI_TENANT_ID}} 
+          export POWER_BI_ACCESS_TOKEN=$(az account get-access-token --resource https://analysis.windows.net/)
+          echo "POWER_BI_ACCESS_TOKEN=$POWER_BI_ACCESS_TOKEN" >> $GITHUB_ENV
+          pbicli login --interactive
+         # pbicli login --service-principal -p ${{env.POWER_BI_CLIENT_ID}} -s ${{env.POWER_BI_CLIENT_SECRET}} -t ${{env.POWER_BI_TENANT_ID}}
           
       - name: Import PBIX File
         run: |
