@@ -54,7 +54,7 @@ jobs:
           AZURE_AD_CLIENT_SECRET="peA8Q~TGozmsgvf8dT3CF16mDlTVvOUuCufJ_aDF"
           ACCESS_TOKEN=$(curl -X POST -d "grant_type=client_credentials" -d "client_id=$AZURE_AD_CLIENT_ID" -d "client_secret=$AZURE_AD_CLIENT_SECRET" -d "scope=https://analysis.windows.net/powerbi/api/.default" "https://login.microsoftonline.com/$AZURE_AD_TENANT_ID/oauth2/token" | jq -r .access_token)
           echo "POWER_BI_ACCESS_TOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
-          pbicli rest --uri /v1.0/myorg/groups/96b1ab18-cd5e-4e01-8ffd-8bf59651f1bf/datasets/1e9f210c-d1b2-480c-8184-96c3938e1fef/Default.UpdateParameters --body -b @{parameter-values.json} --headers Authorization=Bearer ${{env.POWER_BI_ACCESS_TOKEN}} Content-Type=application/json --method POST --verbose
+          pbicli rest --uri https://api.powerbi.com/v1.0/myorg/groups/96b1ab18-cd5e-4e01-8ffd-8bf59651f1bf/datasets/1e9f210c-d1b2-480c-8184-96c3938e1fef/Default.UpdateParameters --body @{parameter-values.json} --headers Authorization=Bearer ${{env.POWER_BI_ACCESS_TOKEN}} Content-Type=application/json --method -m post --verbose
       
       - name: List Dataset Parameters
         run: |
