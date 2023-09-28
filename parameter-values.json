@@ -1,11 +1,12 @@
 {
-    "parameters": [{
-        "name": "SQLDB DEV",
-        "value": "devidata"
+  "updateDetails": [
+    {
+      "name": "Server",
+      "newValue": "prod"
     },
     {
-        "name": "SQL Server Dev",
-        "value": "devidata.database.windows.net"
+      "name": "Database",
+      "newValue": "5678"
     }
-]
+  ]
 }
