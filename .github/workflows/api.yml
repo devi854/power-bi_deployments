@@ -60,7 +60,7 @@ jobs:
 
       - name: Update Power BI Dataset Parameters
         env:
-          POWER_BI_API_URL: https://api.powerbi.com/v1.0/myorg/datasets/84a1fea6-a146-4316-8aa6-5ce61bee7e34/Default.UpdateParameters
+          POWER_BI_API_URL: https://api.powerbi.com/v1.0/myorg/datasets/1e9f210c-d1b2-480c-8184-96c3938e1fef/Default.UpdateParameters
           POWER_BI_ACCESS_TOKEN: $ACCESS_TOKEN
         run: |
           payload='{
