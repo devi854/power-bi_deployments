@@ -30,10 +30,11 @@ jobs:
       - name: Update Power BI Dataset Parameters
         env:
           POWER_BI_ACCESS_TOKEN: ${{ env.POWER_BI_ACCESS_TOKEN }}
+          DATASET_ID: "1e9f210c-d1b2-480c-8184-96c3938e1fef"
         run: |
           # Use the obtained access token to update Power BI dataset parameters
           # Replace the placeholders with your dataset and parameter information
-          $DATASET_ID: "1e9f210c-d1b2-480c-8184-96c3938e1fef"
+          DATASET_ID: "1e9f210c-d1b2-480c-8184-96c3938e1fef"
           
 
           # Construct and send the API request to update parameters
