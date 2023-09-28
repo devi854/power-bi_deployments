@@ -36,18 +36,26 @@ jobs:
       - name: Install Power BI CLI
         run: |
           npm i -g @powerbi-cli/powerbi-cli
+      - name: Get Access Token
+        env:
+          GITHUB_PAT: ${{ secrets.PAT_TOKEN_GIT }}
+        run: |
+          # Use the GitHub PAT to authenticate with Azure AD and obtain an access token
+          # Replace the placeholders with your Azure AD configuration
+          AZURE_AD_TENANT_ID="0277ec7c-6485-4a45-9d8e-07a6941a7819"
+          AZURE_AD_CLIENT_ID="647b60eb-374e-4af1-b7c7-439ba4913814"
+          AZURE_AD_CLIENT_SECRET="peA8Q~TGozmsgvf8dT3CF16mDlTVvOUuCufJ_aDF"
+          ACCESS_TOKEN=$(curl -X POST -d "grant_type=client_credentials" -d "client_id=$AZURE_AD_CLIENT_ID" -d "client_secret=$AZURE_AD_CLIENT_SECRET" -d "scope=https://analysis.windows.net/powerbi/api/.default" "https://login.microsoftonline.com/$AZURE_AD_TENANT_ID/oauth2/token" | jq -r .access_token)
+          echo "POWER_BI_ACCESS_TOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
 
       - name: Authenticate Power BI CLI
         run: |
-          pbicli login --service-principal -p ${{env.POWER_BI_CLIENT_ID}} -s ${{env.POWER_BI_CLIENT_SECRET}} -t ${{env.POWER_BI_TENANT_ID}}
+          #pbicli login --service-principal -p ${{env.POWER_BI_CLIENT_ID}} -s ${{env.POWER_BI_CLIENT_SECRET}} -t ${{env.POWER_BI_TENANT_ID}}
+          pbicli login
           
       - name: Import PBIX File
         run: |
           pbicli import pbix --workspace ${{env.POWER_BI_WORKSPACE_ID}} --file ${{env.PBIX_FILE_PATH}} --name ${{env.DATASET_NAME}} --conflict CreateOrOverwrite
-
-      - name: update datasource
-        run: |
-          pbicli dataset datasource update --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}} --update-details-file ./params.json --verbose
 
       - name: List Dataset Parameters
         run: |
@@ -56,4 +64,4 @@ jobs:
       - name: Update Dataset Parameters
         run: |
           # Here, update dataset parameters using the contents of your parameter file
-          pbicli dataset parameter update --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}} --parameter @{./parameter-values.json} --verbose
+          pbicli dataset parameter update --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}} ----parameter-file ./parameter-values.json --verbose
