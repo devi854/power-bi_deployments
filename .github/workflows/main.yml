@@ -39,6 +39,9 @@ jobs:
       - name: Authenticate Power BI CLI
         run: |
           pbicli login --service-principal -p ${{env.POWER_BI_CLIENT_ID}} -s ${{env.POWER_BI_CLIENT_SECRET}} -t ${{env.POWER_BI_TENANT_ID}}
+      - name: Import PBIX File
+        run: |
+          pbicli import pbix --workspace ${{env.POWER_BI_WORKSPACE_ID}} --file ${{env.PBIX_FILE_PATH}} --name ${{env.DATASET_NAME}} --conflict CreateOrOverwrite
 
       - name: Get Access Token
         env:
@@ -53,12 +56,6 @@ jobs:
           echo "POWER_BI_ACCESS_TOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
           pbicli rest --uri /v1.0/myorg/groups/96b1ab18-cd5e-4e01-8ffd-8bf59651f1bf/datasets/1e9f210c-d1b2-480c-8184-96c3938e1fef/Default.UpdateParameters --body -b @{parameter-values.json} --headers Authorization=Bearer ${{env.POWER_BI_ACCESS_TOKEN}} Content-Type=application/json --method POST --verbose
       
-    
-          
-      - name: Import PBIX File
-        run: |
-          pbicli import pbix --workspace ${{env.POWER_BI_WORKSPACE_ID}} --file ${{env.PBIX_FILE_PATH}} --name ${{env.DATASET_NAME}} --conflict CreateOrOverwrite
-
       - name: List Dataset Parameters
         run: |
           pbicli dataset parameter list --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}}
