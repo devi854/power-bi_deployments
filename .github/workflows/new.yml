@@ -1,0 +1,61 @@
+name: Update Power BI Dataset Parameters
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-dataset-parameters:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get Access Token
+        env:
+          GITHUB_PAT: ${{ secrets.PAT_TOKEN_GIT }}
+        run: |
+          # Use the GitHub PAT to authenticate with Azure AD and obtain an access token
+          # Replace the placeholders with your Azure AD configuration
+          AZURE_AD_TENANT_ID="0277ec7c-6485-4a45-9d8e-07a6941a7819"
+          AZURE_AD_CLIENT_ID="647b60eb-374e-4af1-b7c7-439ba4913814"
+          AZURE_AD_CLIENT_SECRET="peA8Q~TGozmsgvf8dT3CF16mDlTVvOUuCufJ_aDF"
+
+          ACCESS_TOKEN=$(curl -X POST -d "grant_type=client_credentials" -d "client_id=$AZURE_AD_CLIENT_ID" -d "client_secret=$AZURE_AD_CLIENT_SECRET" -d "scope=https://analysis.windows.net/powerbi/api/.default" "https://login.microsoftonline.com/$AZURE_AD_TENANT_ID/oauth2/token" | jq -r .access_token)
+
+          echo "::set-env name=POWER_BI_ACCESS_TOKEN::$ACCESS_TOKEN"
+
+      - name: Update Power BI Dataset Parameters
+        env:
+          POWER_BI_ACCESS_TOKEN: ${{ env.POWER_BI_ACCESS_TOKEN }}
+        run: |
+          # Use the obtained access token to update Power BI dataset parameters
+          # Replace the placeholders with your dataset and parameter information
+          DATASET_ID="1e9f210c-d1b2-480c-8184-96c3938e1fef"
+          PARAMETER_NAME="Server"
+          NEW_VALUE="age"
+
+          # Construct and send the API request to update parameters
+          $headers = @{
+              "Authorization" = "Bearer $POWER_BI_ACCESS_TOKEN"
+              "Content-Type"  = "application/json"
+          }
+
+          $updateUrl = "https://api.powerbi.com/v1.0/myorg/datasets/$DATASET_ID/Default.UpdateParameters"
+
+          $body = @{
+              "updateDetails" = @(
+                  @{
+                      "name"     = "$PARAMETER_NAME"
+                      "newValue" = "$NEW_VALUE"
+                  }
+              )
+          } | ConvertTo-Json
+
+          $response = Invoke-RestMethod -Method PATCH -Uri $updateUrl -Headers $headers -Body $body
+
+          # Optionally, you can check the response or add error handling logic here
+          Write-Host "Response from Power BI API:"
+          Write-Host $response
