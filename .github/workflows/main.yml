@@ -50,8 +50,8 @@ jobs:
 
       - name: Authenticate Power BI CLI
         run: |
-          #pbicli login --service-principal -p ${{env.POWER_BI_CLIENT_ID}} -s ${{env.POWER_BI_CLIENT_SECRET}} -t ${{env.POWER_BI_TENANT_ID}}
-          pbicli login
+          pbicli login --service-principal -p ${{env.POWER_BI_CLIENT_ID}} -s ${{env.POWER_BI_CLIENT_SECRET}} -t ${{env.POWER_BI_TENANT_ID}}
+    
           
       - name: Import PBIX File
         run: |
