@@ -34,8 +34,7 @@ jobs:
           # Use the obtained access token to update Power BI dataset parameters
           # Replace the placeholders with your dataset and parameter information
           DATASET_ID="1e9f210c-d1b2-480c-8184-96c3938e1fef"
-          PARAMETER_NAME="Server"
-          NEW_VALUE="age"
+          
 
           # Construct and send the API request to update parameters
           $headers = @{
@@ -48,8 +47,8 @@ jobs:
           $body = @{
               "updateDetails" = @(
                   @{
-                      "name"     = "$PARAMETER_NAME"
-                      "newValue" = "$NEW_VALUE"
+                      "name"     = "Server"
+                      "newValue" = "age"
                   }
               )
           } | ConvertTo-Json
