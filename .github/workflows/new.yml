@@ -25,7 +25,7 @@ jobs:
 
           ACCESS_TOKEN=$(curl -X POST -d "grant_type=client_credentials" -d "client_id=$AZURE_AD_CLIENT_ID" -d "client_secret=$AZURE_AD_CLIENT_SECRET" -d "scope=https://analysis.windows.net/powerbi/api/.default" "https://login.microsoftonline.com/$AZURE_AD_TENANT_ID/oauth2/token" | jq -r .access_token)
 
-          echo "::set-env name=POWER_BI_ACCESS_TOKEN::$ACCESS_TOKEN"
+          echo "POWER_BI_ACCESS_TOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
 
       - name: Update Power BI Dataset Parameters
         env:
