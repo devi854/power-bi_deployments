@@ -30,16 +30,19 @@ jobs:
 
       - name: Install dependencies
         run: npm install axios
+      - name: Az install
+        shell: pwsh
+        run: |
+          Install-Module Az
 
       - name: Generate Azure AD Access Token
-        id: azure-login
         uses: azure/login@v1
         with:
-          creds: '{"clientId:"${{ env.POWER_BI_CLIENT_ID }}","clientSecret":"${{ env.POWER_BI_CLIENT_SECRET }}","subscriptionId":"${{ env.POWER_BI_SUB_ID }}","tenantId":"${{ env.POWER_BI_TENANT_ID }}"  
-     - name: Set Access Token Output
+          creds: '{"clientId:"${{ env.POWER_BI_CLIENT_ID }}","clientSecret":"${{ env.POWER_BI_CLIENT_SECRET }}","subscriptionId":"${{ env.POWER_BI_SUB_ID }}","tenantId":"${{ env.POWER_BI_TENANT_ID }}"}' 
+          enable-AzPSSession: true
+      - name: Set Access Token Output
         run: echo "::set-output name=access-token::$(az account get-access-token --query accessToken -o tsv)"
-
-
+          
       - name: Update Power BI Parameters
         run: |
           ACCESS_TOKEN="${{ steps.azure-login.outputs.access-token }}"
