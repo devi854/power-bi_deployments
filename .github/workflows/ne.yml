@@ -1,4 +1,4 @@
-name: Power BI Parameter Override
+name: Power BI Parameter Overrides
 
 on:
   push:
