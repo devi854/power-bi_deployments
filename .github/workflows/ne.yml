@@ -40,7 +40,7 @@ jobs:
       - name: Generate Azure AD Access Token
         uses: azure/login@v1
         with:
-          creds: '{"clientId:"${{ env.POWER_BI_CLIENT_ID }}","clientSecret":"${{ env.POWER_BI_CLIENT_SECRET }}","subscriptionId":"${{ env.POWER_BI_SUB_ID }}","tenantId":"${{ env.POWER_BI_TENANT_ID }}"}' 
+          creds: '{"clientId:"${{ env.POWER_BI_CLIENT_ID }}","clientSecret":"${{ env.POWER_BI_CLIENT_SECRET }}","tenantId":"${{ env.POWER_BI_TENANT_ID }}"}' 
           enable-AzPSSession: true
           allow-no-subscriptions: true
       - name: Set Access Token Output
