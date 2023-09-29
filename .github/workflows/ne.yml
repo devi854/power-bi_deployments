@@ -33,7 +33,9 @@ jobs:
       - name: Az install
         shell: pwsh
         run: |
+          Set-PSRepository PSGallery -InstallationPolicy Trusted
           Install-Module Az
+          
 
       - name: Generate Azure AD Access Token
         uses: azure/login@v1
