@@ -1,0 +1,48 @@
+name: Power BI Parameter Override
+
+on:
+  push:
+    branches:
+      - rrr
+env:
+  POWER_BI_CLIENT_ID: ${{secrets.POWER_BI_CLIENT_ID}}
+  POWER_BI_CLIENT_SECRET: ${{secrets.POWER_BI_CLIENT_SECRET}}
+  POWER_BI_TENANT_ID: ${{secrets.POWER_BI_TENANT_ID}}
+  POWER_BI_WORKSPACE_ID: ${{secrets.POWER_BI_WORKSPACE_ID}}
+  PBIX_FILE_PATH: ./devreport0001.pbix
+  DATASET_NAME: devreport0001
+  REPORT_NAME: devreport0001.pbix
+  DOTNET_INSTALL_DIR: "runner/dotnet"
+
+jobs:
+  override-parameters:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install axios
+
+      - name: Generate Azure AD Access Token
+        id: azure-login
+        run: |
+          az login --service-principal -u ${{ secrets.POWER_BI_CLIENT_ID }} -p ${{ secrets.POWER_BI_CLIENT_SECRET }} --tenant ${{ secrets.POWER_BI_TENANT_ID }}
+          echo "::set-output name=access-token::$(az account get-access-token --query accessToken -o tsv)"
+
+      - name: Update Power BI Parameters
+        run: |
+          ACCESS_TOKEN="${{ steps.azure-login.outputs.access-token }}"
+          API_URL="${{ secrets.POWERBI_API_BASE_URL }}/groups/${{ secrets.POWERBI_WORKSPACE_ID }}/datasets/${{ secrets.POWERBI_DATASET_ID }}/UpdateParameters"
+          PAYLOAD='{"updateDetails": [{"name": "Server", "newValue": "db"}, {"name": "Database", "newValue": "sql"}]}'
+          RESPONSE=$(curl -s -X POST $API_URL -H "Authorization: Bearer $ACCESS_TOKEN" -H "Content-Type: application/json" -d "$PAYLOAD")
+          echo "Response: $RESPONSE"
+
+      - name: Show Response
+        run: echo "$RESPONSE"
