@@ -3,7 +3,7 @@ name: Power BI Parameter Overrides
 on:
   push:
     branches:
-      - rrr
+      - rr
 env:
   POWER_BI_CLIENT_ID: ${{secrets.POWER_BI_CLIENT_ID}}
   POWER_BI_CLIENT_SECRET: ${{secrets.POWER_BI_CLIENT_SECRET}}
