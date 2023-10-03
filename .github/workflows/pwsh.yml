@@ -20,12 +20,14 @@ jobs:
 
       - name: Install Power BI PowerShell module
         shell: pwsh
-        run: Install-Module -Name MicrosoftPowerBIMgmt -Force -AllowClobber -Scope AllUsers -Destination /usr/local/share/powershell/Modules
+        run: |
+          Install-Module -Name MicrosoftPowerBIMgmt
+          Install-Module -Name MicrosoftPowerBIMgmt.Workspaces
+          Update-Module -Name MicrosoftPowerBIMgmt
 
       - name: Import Power BI module
         shell: pwsh
-        run: $modulePath = Get-Module -Name MicrosoftPowerBIMgmt -ListAvailable | Select-Object -ExpandProperty ModuleBase
-             Import-Module $modulePath -Force
+        run: Import-Module MicrosoftPowerBIMgmt
 
       - name: Publish PBIX to Power BI Workspace
         shell: pwsh
