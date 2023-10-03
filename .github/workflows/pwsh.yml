@@ -11,6 +11,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Install PowerShell
+        uses: actions/setup-powershell@v1
+        with:
+          powershell-version: '7.x'
 
       - name: AZ PowerShell set-up
         shell: pwsh
