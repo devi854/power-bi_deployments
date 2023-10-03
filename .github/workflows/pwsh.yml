@@ -19,6 +19,7 @@ jobs:
           Install-Module Az
 
       - name: Install Power BI PowerShell module
+        shell: pwsh
         run: Install-Module -Name MicrosoftPowerBIMgmt -Force -AllowClobber -Scope CurrentUser
 
       - name: Import Power BI module
