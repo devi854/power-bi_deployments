@@ -27,6 +27,7 @@ jobs:
         run: Import-Module MicrosoftPowerBIMgmt
 
       - name: Publish PBIX to Power BI Workspace
+        shell: pwsh
         env:
           POWER_BI_CLIENT_ID: ${{secrets.POWER_BI_CLIENT_ID}}
           POWER_BI_CLIENT_SECRET: ${{secrets.POWER_BI_CLIENT_SECRET}}
