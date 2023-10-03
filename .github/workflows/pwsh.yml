@@ -23,6 +23,7 @@ jobs:
         run: Install-Module -Name MicrosoftPowerBIMgmt -Force -AllowClobber -Scope CurrentUser
 
       - name: Import Power BI module
+        shell: pwsh
         run: Import-Module MicrosoftPowerBIMgmt
 
       - name: Publish PBIX to Power BI Workspace
