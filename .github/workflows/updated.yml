@@ -1,15 +1,15 @@
-name: Power BI Deployment with Dataset Parameter Update
+name: Power BI Deployment with Dataset Parameter Update1
 
 on:
   push:
     branches:
-      - rrr
+      - main
 
 env:
-  POWER_BI_CLIENT_ID: ${{ secrets.POWER_BI_CLIENT_ID }}
-  POWER_BI_CLIENT_SECRET: ${{ secrets.POWER_BI_CLIENT_SECRET }}
-  POWER_BI_TENANT_ID: ${{ secrets.POWER_BI_TENANT_ID }}
-  POWER_BI_WORKSPACE_ID: ${{ secrets.POWER_BI_WORKSPACE_ID }}
+  POWER_BI_CLIENT_ID: ${{secrets.POWER_BI_CLIENT_ID}}
+  POWER_BI_CLIENT_SECRET: ${{secrets.POWER_BI_CLIENT_SECRET}}
+  POWER_BI_TENANT_ID: ${{secrets.POWER_BI_TENANT_ID}}
+  POWER_BI_WORKSPACE_ID: ${{secrets.POWER_BI_WORKSPACE_ID}}
   PBIX_FILE_PATH: ./devreport0001.pbix
   DATASET_NAME: devreport0001
   REPORT_NAME: devreport0001.pbix
@@ -35,15 +35,13 @@ jobs:
 
       - name: Install Power BI CLI
         run: |
-          npm i -g @powerbi-cli/powerbi-cl
-
+          npm i -g @powerbi-cli/powerbi-cli
       - name: Authenticate Power BI CLI
         run: |
-          pbicli login --service-principal -p ${{ env.POWER_BI_CLIENT_SECRET }} -s ${{ env.POWER_BI_CLIENT_SECRET }} -t ${{ env.POWER_BI_TENANT_ID }}
-
+          pbicli login --service-principal -p ${{env.POWER_BI_CLIENT_ID}} -s ${{env.POWER_BI_CLIENT_SECRET}} -t ${{env.POWER_BI_TENANT_ID}}
       - name: Import PBIX File
         run: |
-          pbicli import pbix --workspace ${{ env.POWER_BI_WORKSPACE_ID }} --file ${{ env.PBIX_FILE_PATH }} --name ${{ env.DATASET_NAME }} --conflict CreateOrOverwrite
+          pbicli import pbix --workspace ${{env.POWER_BI_WORKSPACE_ID}} --file ${{env.PBIX_FILE_PATH}} --name ${{env.DATASET_NAME}} --conflict CreateOrOverwrite
 
       - name: Get Access Token
         id: get-access-token
