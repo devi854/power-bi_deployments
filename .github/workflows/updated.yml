@@ -16,7 +16,7 @@ env:
   DOTNET_INSTALL_DIR: "runner/dotnet"
 
 jobs:
-  pbix_deploy:
+  power_bideploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -42,7 +42,6 @@ jobs:
       - name: Import PBIX File
         run: |
           pbicli import pbix --workspace ${{env.POWER_BI_WORKSPACE_ID}} --file ${{env.PBIX_FILE_PATH}} --name ${{env.DATASET_NAME}} --conflict CreateOrOverwrite
-
       - name: Get Access Token
         id: get-access-token
         run: |
