@@ -1,0 +1,59 @@
+name: Power BI Deployment with Dataset Parameter Update
+
+on:
+  push:
+    branches:
+      - rrr
+
+env:
+  POWER_BI_CLIENT_ID: ${{ secrets.POWER_BI_CLIENT_ID }}
+  POWER_BI_CLIENT_SECRET: ${{ secrets.POWER_BI_CLIENT_SECRET }}
+  POWER_BI_TENANT_ID: ${{ secrets.POWER_BI_TENANT_ID }}
+  POWER_BI_WORKSPACE_ID: ${{ secrets.POWER_BI_WORKSPACE_ID }}
+  PBIX_FILE_PATH: ./devreport0001.pbix
+  DATASET_NAME: devreport0001
+  REPORT_NAME: devreport0001.pbix
+
+jobs:
+  pbix_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install Power BI CLI
+        run: |
+          npm install -g powerbi-cli
+
+      - name: Authenticate Power BI CLI
+        run: |
+          pbicli login --service-principal -p ${{ env.POWER_BI_CLIENT_SECRET }} -s ${{ env.POWER_BI_CLIENT_SECRET }} -t ${{ env.POWER_BI_TENANT_ID }}
+
+      - name: Import PBIX File
+        run: |
+          pbicli import pbix --workspace ${{ env.POWER_BI_WORKSPACE_ID }} --file ${{ env.PBIX_FILE_PATH }} --name ${{ env.DATASET_NAME }} --conflict CreateOrOverwrite
+
+      - name: Get Access Token
+        id: get-access-token
+        run: |
+          # Use the client ID, client secret, and tenant ID to obtain an access token
+          AZURE_AD_CLIENT_ID="${{ env.POWER_BI_CLIENT_ID }}"
+          AZURE_AD_CLIENT_SECRET="${{ env.POWER_BI_CLIENT_SECRET }}"
+          AZURE_AD_TENANT_ID="${{ env.POWER_BI_TENANT_ID }}"
+          ACCESS_TOKEN=$(curl -X POST -d "grant_type=client_credentials" -d "client_id=$AZURE_AD_CLIENT_ID" -d "client_secret=$AZURE_AD_CLIENT_SECRET" -d "scope=https://analysis.windows.net/powerbi/api/.default" "https://login.microsoftonline.com/$AZURE_AD_TENANT_ID/oauth2/token" | jq -r .access_token)
+          echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
+
+      - name: Update Dataset Parameters
+        run: |
+          pbicli dataset parameter update --workspace ${{ env.POWER_BI_WORKSPACE_ID }} --dataset ${{ env.DATASET_NAME }} --parameter-file ./parameter-values.json
