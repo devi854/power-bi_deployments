@@ -3,7 +3,7 @@ name: Power BI Deployment with Dataset Parameter Update1
 on:
   push:
     branches:
-      - main
+      - rrr
 
 env:
   POWER_BI_CLIENT_ID: ${{secrets.POWER_BI_CLIENT_ID}}
