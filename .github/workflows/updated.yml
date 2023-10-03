@@ -13,6 +13,7 @@ env:
   PBIX_FILE_PATH: ./devreport0001.pbix
   DATASET_NAME: devreport0001
   REPORT_NAME: devreport0001.pbix
+  DOTNET_INSTALL_DIR: "runner/dotnet"
 
 jobs:
   pbix_deploy:
@@ -20,21 +21,21 @@ jobs:
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v3.0.3
         with:
           dotnet-version: 6.0.x
 
       - name: Install Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 18
 
       - name: Install Power BI CLI
         run: |
-          npm install -g powerbi-cli
+          npm i -g @powerbi-cli/powerbi-cl
 
       - name: Authenticate Power BI CLI
         run: |
