@@ -33,20 +33,22 @@ jobs:
         shell: pwsh
         run: Import-Module MicrosoftPowerBIMgmt
 
-      - name: Publish PBIX to Power BI Workspace
+      - name: Authenticate with Power BI
         shell: pwsh
         env:
           POWER_BI_CLIENT_ID: ${{secrets.POWER_BI_CLIENT_ID}}
           POWER_BI_CLIENT_SECRET: ${{secrets.POWER_BI_CLIENT_SECRET}}
           POWER_BI_WORKSPACE_ID: ${{secrets.POWER_BI_WORKSPACE_ID}}
+          POWER_BI_TENANT_ID: ${{secrets.POWER_BI_TENANT_ID}}
         run: |
-          $PowerBISession = New-PowerBISession -ClientId $env:POWER_BI_CLIENT_ID -ClientSecret $env:POWER_BI_CLIENT_SECRET -ErrorAction Stop
-          Set-PowerBISession -PowerBISession $PowerBISession -ErrorAction Stop
-          
+          $PbiServiceAccount = Connect-PowerBIServiceAccount -ServicePrincipal -ClientId $env:POWER_BI_CLIENT_ID -ClientSecret $env:POWER_BI_CLIENT_SECRET -TenantId $env:POWER_BI_TENANT_ID -ErrorAction Stop
+      - name: Publish PBIX to Power BI Workspace 
+        env:
+          POWER_BI_WORKSPACE_ID: ${{secrets.POWER_BI_WORKSPACE_ID}}
+        run: |
           $PBIXFilePath = "./devreport0001.pbix"  # Update with your .pbix file path
           $DatasetName = "devreport0001"      # Update with your dataset name
           $TargetWorkspaceId = $env:POWER_BI_WORKSPACE_ID
-
           Publish-PowerBIFile -Path $PBIXFilePath -Name $DatasetName -WorkspaceId $TargetWorkspaceId -ErrorAction Stop
 
       - name: Update Dataset Parameters
@@ -55,10 +57,7 @@ jobs:
           POWER_BI_CLIENT_SECRET: ${{secrets.POWER_BI_CLIENT_SECRET}}
           POWER_BI_WORKSPACE_ID: ${{ secrets.POWER_BI_WORKSPACE_ID }}
         run: |
-          $PowerBISession = New-PowerBISession -ClientId $env:POWER_BI_CLIENT_ID -ClientSecret $env:POWER_BI_CLIENT_SECRET -ErrorAction Stop
-          Set-PowerBISession -PowerBISession $PowerBISession -ErrorAction Stop
-          
-          $DatasetId = Get-PowerBIDataset -Name $DatasetName -WorkspaceId $env:POWER_BI_WORKSPACE_ID | Select-Object -ExpandProperty Id
+          $DatasetName = "devreport0001"
           $Parameters = @(
             @{
               Name = "Server"
@@ -71,5 +70,11 @@ jobs:
               Values = "SQLDB"
             }
           )  # Define your parameter updates here
+
+          $ApiUrl = "https://api.powerbi.com/v1.0/myorg/groups/$($env:POWER_BI_WORKSPACE_ID)/datasets/$($DatasetName)/Default.UpdateParameters"
+          $ApiRequestBody = @{
+            updateDetails = $Parameters
+          } | ConvertTo-Json
+          Invoke-RestMethod -Uri $ApiUrl -Method Post -Headers @{Authorization = "Bearer $($PbiServiceAccount.AccessToken)"} -Body $ApiRequestBody -ContentType "application/json"
 
           Set-PowerBIDatasetParameter -DatasetId $DatasetId -Parameters $Parameters -ErrorAction Stop
