@@ -1,25 +1,18 @@
-name: Dataset Parameters
+name: Update Power BI Parameters
 
 on:
   push:
-    branches:
-      - update-002
+    paths:
+      - '**/*.pbix'
 
 jobs:
-  update-dataset-parameters:
-    runs-on: ubuntu-latest
-
+  update_parameters:
+    runs-on: windows-latest
     steps:
-      - name: Check out the code
-        uses: actions/checkout@v3
-      - name: Run PowerShell script
-        shell: pwsh
-        run: |
-          # Run the PowerShell script
-          ./update_dataset_parameters.ps1
-        env:
-          POWER_BI_CLIENT_ID: ${{ secrets.POWER_BI_CLIENT_ID }}
-          POWER_BI_CLIENT_SECRET: ${{ secrets.POWER_BI_CLIENT_SECRET }}
-          POWER_BI_TENANT_ID: ${{ secrets.POWER_BI_TENANT_ID }}
-          POWER_BI_WORKSPACE_NAME: ${{ secrets.POWER_BI_WORKSPACE_NAME }}
-          POWER_BI_DATASET_NAME: ${{ secrets.POWER_BI_DATASET_NAME }}
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run shell script
+        uses: PowerShell/action@v1
+        with:
+          script: ./update_dataset_parameters.ps1 # Change this to the path of your shell script
