@@ -2,8 +2,8 @@ name: Update Power BI Parameters
 
 on:
   push:
-    paths:
-      - '**/*.pbix'
+    branches:
+      - update-003
 
 jobs:
   update_parameters:
