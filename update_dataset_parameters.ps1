@@ -1,15 +1,16 @@
-# update_dataset_parameters.ps1
-
 # Import the Power BI PowerShell module
 Import-Module -Name MicrosoftPowerBIMgmt
 
 # Set the service principal credentials
-$clientId = "647b60eb-374e-4af1-b7c7-439ba4913814"
-$clientSecret = "peA8Q~TGozmsgvf8dT3CF16mDlTVvOUuCufJ_aDF"
-$tenantId = "0277ec7c-6485-4a45-9d8e-07a6941a7819"
+$clientId = "your_client_id"
+$clientSecret = "your_client_secret"
+$tenantId = "your_tenant_id"
 
 # Authenticate using Azure AD service principal credentials
 Connect-PowerBIServiceAccount -ServicePrincipal -Credential (New-Object PSCredential $clientId, (ConvertTo-SecureString $clientSecret -AsPlainText -Force)) -Tenant $tenantId
+
+# Get the access token
+$token = Get-PowerBIAccessToken -ClientId $clientId -ClientSecret $clientSecret -Tenant $tenantId
 
 # Set the dataset id and the parameter name and value
 $datasetId = "1e9f210c-d1b2-480c-8184-96c3938e1fef"
@@ -27,5 +28,8 @@ $body = @{
     )
 } | ConvertTo-Json
 
-# Invoke the API call with the URL and the body
-Invoke-PowerBIRestMethod -Url $url -Method Post -Body $body
+# Invoke the API call with the access token
+Invoke-PowerBIRestMethod -Url $url -Method Post -Body $body -AccessToken $token
+
+# Logout when done (optional)
+# Disconnect-PowerBIServiceAccount
