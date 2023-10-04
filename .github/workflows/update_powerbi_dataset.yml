@@ -3,7 +3,7 @@ name: Dataset Parameters
 on:
   push:
     branches:
-      - update-0001
+      - update-002
 
 jobs:
   update-dataset-parameters:
