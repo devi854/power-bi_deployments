@@ -3,11 +3,11 @@ name: Update Power BI Parameters
 on:
   push:
     branches:
-      - update-003
+      - update-004
 
 jobs:
   update_parameters:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
