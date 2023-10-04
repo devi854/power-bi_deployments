@@ -5,6 +5,7 @@ if (-not (Get-Module -Name MicrosoftPowerBIMgmt -ListAvailable)) {
     Install-Module -Name MicrosoftPowerBIMgmt -Force -Scope CurrentUser
 }
 # update_dataset_parameters.ps1
+# update_dataset_parameters.ps1
 
 # Parameters
 $clientId = $env:POWER_BI_CLIENT_ID
@@ -17,25 +18,17 @@ $datasetName = $env:POWER_BI_DATASET_NAME
 $secPassword = ConvertTo-SecureString $clientSecret -AsPlainText -Force
 $credential = New-Object PSCredential $clientId, $secPassword
 
-# Get an Azure AD token using Service Principal credentials
-$tokenUrl = "https://login.microsoftonline.com/$tenantId/oauth2/token"
-$tokenBody = @{
-    grant_type    = "client_credentials"
-    client_id     = $clientId
-    client_secret = $clientSecret
-    resource      = "https://analysis.windows.net/powerbi/api"
-}
-$response = Invoke-RestMethod -Uri $tokenUrl -Method Post -Body $tokenBody
-$token = $response.access_token
+# Log in with Service Principal credentials
+Login-PowerBIServiceAccount -ServicePrincipal -Credential $credential -Tenant $tenantId
 
-# Update these parameters for the target workspace and dataset
+# Get the Power BI workspace
 $workspace = Get-PowerBIWorkspace -Name $workspaceName -Scope Organization
+
+# Get the dataset within the workspace
 $dataset = Get-PowerBIDataset -WorkspaceId $workspace.Id -Scope Organization | Where-Object Name -eq $datasetName
-$workspaceId = $workspace.Id
-$datasetId = $dataset.Id
 
 # Create REST URL to update State parameter for the dataset
-$datasetParametersUrl = "https://api.powerbi.com/v1.0/myorg/groups/$workspaceId/datasets/$datasetId/Default.UpdateParameters"
+$datasetParametersUrl = "https://api.powerbi.com/v1.0/myorg/groups/$($workspace.Id)/datasets/$($dataset.Id)/Default.UpdateParameters"
 
 # Define the parameter name and new value
 $parameterName = "myserver"
@@ -53,5 +46,11 @@ $postBody = @{
 
 # Invoke POST operation to update dataset parameters
 Invoke-RestMethod -Uri $datasetParametersUrl -Method Post -Headers @{
-    'Authorization' = "Bearer $token"
+    'Authorization' = "Bearer $((Get-PowerBIAccessToken).AccessToken)"
 } -Body $postBody -ContentType 'application/json'
+
+# If parameter updates change connection information (e.g., server path, database name),
+# you may need to patch datasource credentials before refreshing the dataset
+
+# Log out to end the session (optional)
+# Logout-PowerBIServiceAccount
