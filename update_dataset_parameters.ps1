@@ -29,8 +29,8 @@ $response = Invoke-RestMethod -Uri $tokenUrl -Method Post -Body $tokenBody
 $token = $response.access_token
 
 # Update these parameters for the target workspace and dataset
-$workspace = Get-PowerBIWorkspace -Name $workspaceName -Scope Organization -AccessToken $token
-$dataset = Get-PowerBIDataset -WorkspaceId $workspace.Id -Scope Organization -AccessToken $token | Where-Object Name -eq $datasetName
+$workspace = Get-PowerBIWorkspace -Name $workspaceName -Scope Organization
+$dataset = Get-PowerBIDataset -WorkspaceId $workspace.Id -Scope Organization | Where-Object Name -eq $datasetName
 $workspaceId = $workspace.Id
 $datasetId = $dataset.Id
 
@@ -38,8 +38,8 @@ $datasetId = $dataset.Id
 $datasetParametersUrl = "https://api.powerbi.com/v1.0/myorg/groups/$workspaceId/datasets/$datasetId/Default.UpdateParameters"
 
 # Define the parameter name and new value
-$parameterName = "sqlserver"
-$newParameterValue = "sqldatabase"
+$parameterName = "myserver"
+$newParameterValue = "mydb"
 
 # Create JSON for the POST body to update dataset parameters
 $postBody = @{
@@ -55,6 +55,3 @@ $postBody = @{
 Invoke-RestMethod -Uri $datasetParametersUrl -Method Post -Headers @{
     'Authorization' = "Bearer $token"
 } -Body $postBody -ContentType 'application/json'
-
-# If parameter updates change connection information (e.g., server path, database name),
-# you may need to patch datasource credentials before refreshing the dataset
