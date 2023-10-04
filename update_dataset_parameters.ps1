@@ -1,5 +1,9 @@
 # update_dataset_parameters.ps1
 
+# Install the MicrosoftPowerBIMgmt module if it's not already installed
+if (-not (Get-Module -Name MicrosoftPowerBIMgmt -ListAvailable)) {
+    Install-Module -Name MicrosoftPowerBIMgmt -Force -Scope CurrentUser
+}
 # Parameters
 $clientId = $env:POWER_BI_CLIENT_ID
 $clientSecret = $env:POWER_BI_CLIENT_SECRET
