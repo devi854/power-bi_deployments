@@ -1,4 +1,5 @@
 # Set the dataset id and the parameter name and value
+Import-Module -Name MicrosoftPowerBIMgmt
 $datasetId = "1e9f210c-d1b2-480c-8184-96c3938e1fef"
 $parameterName = "StartDate"
 $parameterValue = "2021-10-01"
