@@ -11,7 +11,7 @@ if (-not (Get-Module -Name MicrosoftPowerBIMgmt -ListAvailable)) {
 $clientId = $env:POWER_BI_CLIENT_ID
 $clientSecret = $env:POWER_BI_CLIENT_SECRET
 $tenantId = $env:POWER_BI_TENANT_ID
-$workspaceName = $env:POWER_BI_WORKSPACE_NAME
+$workspaceName = "data of deals" # Update to the desired workspace name
 $datasetName = $env:POWER_BI_DATASET_NAME
 
 # Authenticate using Service Principal
@@ -21,11 +21,21 @@ $credential = New-Object PSCredential $clientId, $secPassword
 # Log in with Service Principal credentials
 Login-PowerBIServiceAccount -ServicePrincipal -Credential $credential -Tenant $tenantId
 
-# Get the Power BI workspace
-$workspace = Get-PowerBIWorkspace -Name $workspaceName -Scope Organization
+# Get the Power BI workspace using the provided filter
+$workspace = Get-PowerBIWorkspace -Scope Organization -Filter "tolower(name) eq '$workspaceName'"
+
+if ($workspace -eq $null) {
+    Write-Host "Workspace '$workspaceName' not found."
+    exit 1
+}
 
 # Get the dataset within the workspace
 $dataset = Get-PowerBIDataset -WorkspaceId $workspace.Id -Scope Organization | Where-Object Name -eq $datasetName
+
+if ($dataset -eq $null) {
+    Write-Host "Dataset '$datasetName' not found in workspace '$workspaceName'."
+    exit 1
+}
 
 # Create REST URL to update State parameter for the dataset
 $datasetParametersUrl = "https://api.powerbi.com/v1.0/myorg/groups/$($workspace.Id)/datasets/$($dataset.Id)/Default.UpdateParameters"
