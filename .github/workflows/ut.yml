@@ -1,0 +1,68 @@
+name: Power BI Dataset Update
+
+on:
+  push:
+    branches:
+      - new-01  # Adjust the branch name as needed
+
+jobs:
+  update_dataset:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install required modules
+        shell: pwsh
+        run: |
+          Install-Module -Name AzureRM.Profile -Scope CurrentUser -Force
+          Install-Module -Name MicrosoftPowerBIMgmt -Scope CurrentUser -Force
+
+      - name: Run PowerShell script
+        shell: pwsh
+        run: |
+          $sourceDatasetGroupId = "96b1ab18-cd5e-4e01-8ffd-8bf59651f1bf"
+          $sourceDatasetId = "1e9f210c-d1b2-480c-8184-96c3938e1fef"
+          $clientId = ${{ secrets.POWER_BI_CLIENT_ID }}  # Use GitHub Secrets for your client ID
+          $clientSecret = ${{ secrets.POWER_BI_CLIENT_SECRET }}  # Use GitHub Secrets for your client secret
+
+          function GetAuthToken {
+              $redirectUri = "urn:ietf:wg:oauth:2.0:oob"
+              $resourceAppIdURI = "https://analysis.windows.net/powerbi/api"
+              $authority = "https://login.microsoftonline.com/common/oauth2/authorize"
+              Import-Module -Name "AzureRM.Profile" -Force
+              $authContext = [Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext]$authority
+              $authResult = $authContext.AcquireToken($resourceAppIdURI, $clientId, $redirectUri, "Always")
+              return $authResult
+          }
+
+          $token = GetAuthToken
+          $authHeader = @{
+              'Content-Type'='application/json'
+              'Authorization'=$token.CreateAuthorizationHeader()
+          }
+
+          $sourceGroupPath = "myorg/groups/$sourceDatasetGroupId"
+
+          $body = @{
+              updateDetails = @(
+                  @{
+                      name = "Server"
+                      newValue = "advanceddev"
+                  },
+                  @{
+                      name = "Database"
+                      newValue = "Sqldatabase"
+                  }
+              )
+          }
+
+          $jsonPostBody = $body | ConvertTo-Json
+
+          $uri = "https://api.powerbi.com/v1.0/$sourceGroupPath/datasets/$sourceDatasetId/updateParameters"
+
+          Invoke-RestMethod -Uri $uri -Headers $authHeader -Method POST -Body $jsonPostBody -Verbose
+        env:
+          CLIENT_ID: ${{ secrets.POWER_BI_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.POWER_BI_CLIENT_SECRET }}
