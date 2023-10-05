@@ -18,6 +18,7 @@ jobs:
         run: |
           Install-Module -Name Az -Scope CurrentUser -Force
           Install-Module -Name MicrosoftPowerBIMgmt -Scope CurrentUser -Force
+          Install-Module -Name AzureAD -Scope CurrentUser -Force
 
       - name: Run PowerShell script
         shell: pwsh
