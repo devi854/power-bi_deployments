@@ -34,7 +34,7 @@ jobs:
               $resourceAppIdURI = "https://analysis.windows.net/powerbi/api"
               $authority = "https://login.microsoftonline.com/common/oauth2/authorize"
               Import-Module -Name "Az" -Force
-              $authContext = [Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext]$authority
+              #$authContext = [Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext]$authority
               $authResult = $authContext.AcquireToken($resourceAppIdURI, $clientId, $redirectUri, "Always")
               return $authResult
           }
