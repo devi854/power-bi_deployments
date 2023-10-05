@@ -32,7 +32,7 @@ jobs:
               $redirectUri = "urn:ietf:wg:oauth:2.0:oob"
               $resourceAppIdURI = "https://analysis.windows.net/powerbi/api"
               $authority = "https://login.microsoftonline.com/common/oauth2/authorize"
-              Import-Module -Name "AzureRM.Profile" -Force
+              Import-Module -Name "Az" -Force
               $authContext = [Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext]$authority
               $authResult = $authContext.AcquireToken($resourceAppIdURI, $clientId, $redirectUri, "Always")
               return $authResult
