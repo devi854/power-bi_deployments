@@ -23,6 +23,7 @@ jobs:
 
     - name: Run Python Script
       run: |
+        chmod a+x pys.py
         ./pys.py
 
     - name: Commit and Push Changes
