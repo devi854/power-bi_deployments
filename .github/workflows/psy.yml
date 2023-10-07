@@ -1,0 +1,34 @@
+name: Update Power BI Dataset
+
+on:
+  push:
+    branches:
+      - pyyy
+
+jobs:
+  update_powerbi:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x  # Replace with your desired Python version
+
+    - name: Install Dependencies
+      run: pip install requests
+
+    - name: Run Python Script
+      run: |
+        ./pys.py
+
+    - name: Commit and Push Changes
+      run: |
+        git config --local user.email "actions@github.com"
+        git config --local user.name "GitHub Actions"
+        git commit -am "Update Power BI Dataset Parameters"
+        git push
+
