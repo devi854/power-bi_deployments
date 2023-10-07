@@ -22,9 +22,7 @@ jobs:
       run: pip install requests
 
     - name: Run Python Script
-      run: |
-        chmod a+x pys.py
-        ./pys.py
+      run: python pys.py
 
     - name: Commit and Push Changes
       run: |
