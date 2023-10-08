@@ -42,6 +42,10 @@ jobs:
       - name: Import PBIX File
         run: |
           pbicli import pbix --workspace ${{env.POWER_BI_WORKSPACE_ID}} --file ${{env.PBIX_FILE_PATH}} --name ${{env.DATASET_NAME}} --conflict CreateOrOverwrite
+      
+      - name: pbicli dataset set-owner
+        run: |
+          pbicli dataset set-owner --workspace ${{env.POWER_BI_WORKSPACE_ID}} --dataset ${{env.DATASET_NAME}} 
 
       - name: Get Access Token
         env:
