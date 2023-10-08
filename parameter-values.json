@@ -2,11 +2,11 @@
   "updateDetails": [
     {
       "name": "Server",
-      "newValue": "prod"
+      "newValue": "SQLSERVER"
     },
     {
       "name": "Database",
-      "newValue": "5678"
+      "newValue": "sqldb"
     }
   ]
 }
